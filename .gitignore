@@ -1,0 +1,14 @@
+# Secrets — RTK and OpenAI credentials live here, never in the repo
+.survey_keys
+*.key
+
+# Data the car produces (gigabytes; regenerate by driving)
+data/
+logs/
+*.csv
+!results/*.csv
+
+# Python
+__pycache__/
+*.pyc
+.venv/

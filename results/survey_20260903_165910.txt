@@ -1,0 +1,36 @@
+========================================================
+SURVEY RESULTS  -  run 20260903_165910  (live)
+========================================================
+
+Frames analysed : 356  (live, during the lap)
+Analysis time   : 390.9 s at 0.91 fps
+Raw detections  : 9227
+
+DISTINCT OBJECTS (merged within 3.0 m):
+    people       7 distinct   (338 raw detections)
+    shrubs      26 distinct   (3769 raw detections)
+    trees       25 distinct   (4971 raw detections)
+
+CARBON  (rough, per year)
+    people       7 x  365.0 kg  =      2555 kg CO2 emitted
+    shrubs      26 x    3.0 kg  =        78 kg CO2 absorbed
+    trees       25 x   21.8 kg  =       545 kg CO2 absorbed
+    ------------------------------------------------
+    net                                       -1932 kg CO2 / yr
+
+  Population averages per object, not measurements of these
+  plants: tree 21.8 kg/yr (~48 lb, urban-forestry average),
+  shrub 3 kg/yr (least standardised), human respiration 1 kg/day.
+  Human respiration is part of the SHORT carbon cycle - it returns
+  carbon that food crops recently took from the air - so the net
+  figure is illustrative, not a climate ledger.
+  Counts are route-segment clusters, so this inherits their error.
+
+METHOD / LIMITATIONS
+  Detection ran WHILE the car drove, on frames as they were
+  recorded. Counts are distinct spatial clusters of the CAR's
+  position when each detection fired, not surveyed positions of
+  the objects themselves. No depth was used, so two objects
+  passed within 3.0 m may merge. Treat counts as a lower bound.
+
+Detection log: /home/pi/oakd_project/data/logs/detections_20260903_165910.csv

@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grove — Survey Lap</title>
+<style>
+/* No webfonts on purpose: this has to render with the Wi-Fi off. */
+:root{
+  color-scheme: light;
+  --bark:#14201a; --bark-2:#3d4f45; --bark-3:#6c7d72;
+  --canvas:#eef1ea; --card:#fbfcf9; --sunk:#e3e8dd; --edge:#d2dac9;
+  --moss:#0a7a45; --moss-deep:#065c34; --moss-wash:#dcece2;
+  --trees:#0a7a45; --shrubs:#c98b1e; --people:#6f5bd0; --alert:#a6401f;
+  --lift:0 1px 2px rgba(20,32,26,.05), 0 12px 32px -20px rgba(20,32,26,.35);
+  --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+@media (prefers-color-scheme: dark){:root{
+  color-scheme: dark;
+  --bark:#eef3ec; --bark-2:#b3c2b7; --bark-3:#7f8f84;
+  --canvas:#0d120f; --card:#151d18; --sunk:#101711; --edge:#26332b;
+  --moss:#3fbf80; --moss-deep:#2aa068; --moss-wash:#10281c;
+  --trees:#22a066; --shrubs:#c99a3a; --people:#8f78d4; --alert:#e0714a;
+  --lift:0 1px 2px rgba(0,0,0,.5), 0 14px 34px -22px rgba(0,0,0,.9);
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--canvas);color:var(--bark);font-family:var(--sans);
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding:26px 22px 60px}
+header{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+h1{font-family:var(--serif);font-size:31px;font-weight:600;margin:0;letter-spacing:-.01em}
+.sub{color:var(--bark-3);font-size:13.5px}
+.runid{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--bark-3);
+  background:var(--card);border:1px solid var(--edge);border-radius:7px;padding:5px 10px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+  gap:13px;margin-bottom:22px}
+.kpi{background:var(--card);border:1px solid var(--edge);border-radius:14px;
+  padding:15px 17px;box-shadow:var(--lift)}
+.kpi .k{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--bark-3);font-weight:700;margin-bottom:6px;display:flex;
+  align-items:center;gap:7px}
+.kpi .v{font-family:var(--serif);font-size:29px;font-weight:600;line-height:1;
+  font-variant-numeric:tabular-nums}
+.kpi .s{font-size:11.5px;color:var(--bark-3);margin-top:5px;line-height:1.45}
+.swatch{width:9px;height:9px;border-radius:3px;display:inline-block}
+.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:20px}
+@media(max-width:940px){.grid{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:16px;
+  box-shadow:var(--lift);overflow:hidden;margin-bottom:20px}
+.card h2{font-family:var(--serif);font-size:16px;font-weight:600;margin:0;
+  padding:15px 19px;border-bottom:1px solid var(--edge);display:flex;
+  align-items:center;gap:9px}
+.body{padding:17px 19px}
+.shot{width:100%;display:block;background:var(--sunk);aspect-ratio:16/9;
+  object-fit:contain}
+.ctl{display:flex;align-items:center;gap:12px;padding:13px 17px;
+  border-top:1px solid var(--edge)}
+.ctl input[type=range]{flex:1;accent-color:var(--moss);min-width:60px}
+button.play{width:38px;height:38px;border-radius:50%;border:1px solid var(--edge);
+  background:var(--card);color:var(--bark);cursor:pointer;font-size:13px;flex:none}
+button.play:hover{border-color:var(--moss);color:var(--moss)}
+.spd{font-family:var(--mono);font-size:11.5px;color:var(--bark-3);
+  background:var(--sunk);border:1px solid var(--edge);border-radius:7px;
+  padding:4px 7px;cursor:pointer}
+.fnum{font-family:var(--mono);font-size:12.5px;min-width:9ch;text-align:right;
+  font-variant-numeric:tabular-nums;color:var(--bark-2)}
+.tabs{display:flex;border-bottom:1px solid var(--edge);background:var(--sunk)}
+.tab{padding:13px 17px;font-size:13px;font-weight:600;color:var(--bark-3);
+  cursor:pointer;border-bottom:2px solid transparent;user-select:none}
+.tab[aria-selected=true]{color:var(--bark);background:var(--card);
+  border-bottom-color:var(--moss)}
+pre.rep{margin:0;padding:19px;font-family:var(--mono);font-size:12.5px;
+  line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--bark-2);
+  max-height:520px;overflow:auto}
+.narr{padding:8px 19px 19px;max-height:520px;overflow:auto}
+.nline{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--edge);
+  font-size:13.5px;line-height:1.55;color:var(--bark-2)}
+.nline:last-child{border-bottom:0}
+.nline b{font-family:var(--mono);font-size:11.5px;color:var(--bark-3);
+  font-weight:500;flex:0 0 5.5ch;text-align:right;font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:15px;flex-wrap:wrap;padding:0 19px 15px;font-size:12.5px;
+  color:var(--bark-2)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.note{padding:0 19px 17px;font-size:11.5px;color:var(--bark-3);line-height:1.55}
+footer{margin-top:26px;padding-top:18px;border-top:1px solid var(--edge);
+  font-size:11.5px;color:var(--bark-3);line-height:1.6}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Grove</h1>
+  <span class="sub" id="hsub"></span>
+  <span class="runid" id="hrun"></span>
+</header>
+
+<div class="kpis" id="kpis"></div>
+
+<div class="grid">
+  <div>
+    <div class="card">
+      <h2>Detection video</h2>
+      <img class="shot" id="shot" alt="annotated survey frame">
+      <div class="ctl">
+        <button class="play" id="play" title="Play">&#9654;</button>
+        <input type="range" id="slider" min="0" value="0">
+        <span class="spd" id="spd" title="Playback speed">1&times;</span>
+        <span class="fnum" id="fnum"></span>
+      </div>
+      <div class="note" id="vnote"></div>
+    </div>
+    <div class="card">
+      <h2>Route &amp; detections</h2>
+      <div class="body" style="padding:12px"><svg id="map" viewBox="0 0 600 420"
+           style="width:100%;height:auto;display:block"></svg></div>
+      <div class="legend" id="legend"></div>
+      <div class="note">The line is where the car drove. Each dot is a merged
+        detection cluster, placed at the <em>car's</em> position when it fired &mdash;
+        not the surveyed position of the object itself.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <div class="tab" id="t-llm" aria-selected="true">Written report</div>
+      <div class="tab" id="t-num" aria-selected="false">Numbers</div>
+      <div class="tab" id="t-nar" aria-selected="false">As it happened</div>
+    </div>
+    <pre class="rep" id="rep"></pre>
+    <div class="narr" id="nar" style="display:none"></div>
+  </div>
+</div>
+
+<footer id="foot"></footer>
+</div>
+
+<script>
+var D = /*__DATA__*/;
+var F = /*__FRAMES__*/;
+var $ = function(s){ return document.querySelector(s); };
+var CLASSES = ["trees","shrubs","people"];
+
+/* ---------- header ---------- */
+$("#hsub").textContent = "Robocar tree survey — " + D.when;
+$("#hrun").textContent = D.run;
+
+/* ---------- kpis ---------- */
+(function(){
+  var h = "";
+  CLASSES.forEach(function(c){
+    if (D.counts[c] === undefined) return;
+    h += '<div class="kpi"><div class="k"><span class="swatch" style="background:var(--'
+       + c + ')"></span>' + c + '</div><div class="v" style="color:var(--' + c + ')">'
+       + D.counts[c] + '</div><div class="s">' + (D.raw[c] || 0)
+       + ' raw detections</div></div>';
+  });
+  h += '<div class="kpi"><div class="k">distance</div><div class="v">' + D.metres
+     + ' m</div><div class="s">' + D.seconds + ' s driving</div></div>';
+  if (D.carbon){
+    var good = D.carbon.net >= 0;
+    h += '<div class="kpi"><div class="k">carbon / yr</div><div class="v" style="color:var('
+       + (good ? "--trees" : "--alert") + ')">' + (D.carbon.net > 0 ? "+" : "")
+       + D.carbon.net.toLocaleString() + ' kg</div><div class="s">'
+       + D.carbon.absorbed.toLocaleString() + ' absorbed − '
+       + D.carbon.emitted.toLocaleString() + ' emitted<br>rough averages, not measured</div></div>';
+  }
+  h += '<div class="kpi"><div class="k">frames</div><div class="v">' + D.n_frames
+     + '</div><div class="s">' + (D.annotated ? "annotated on the AI HAT" : "raw recording")
+     + (D.rate ? " · " + D.rate + " fps" : "") + '</div></div>';
+  $("#kpis").innerHTML = h;
+})();
+
+/* ---------- video ---------- */
+var i = 0, timer = null, speeds = [1, 2, 4, 0.5], si = 0;
+var shot = $("#shot"), slider = $("#slider");
+slider.max = Math.max(0, F.length - 1);
+$("#vnote").textContent = D.annotated
+  ? "Every frame the detector processed during the lap, with its boxes."
+  : "Raw recording — this run has no annotated frames.";
+
+function show(n){
+  if (!F.length) return;
+  i = Math.max(0, Math.min(F.length - 1, n));
+  shot.src = "data:image/jpeg;base64," + F[i];
+  slider.value = i;
+  $("#fnum").textContent = (i + 1) + " / " + F.length;
+}
+function stop(){ if (timer){ clearInterval(timer); timer = null; }
+                 $("#play").innerHTML = "&#9654;"; }
+function play(){
+  if (timer) return stop();
+  if (!F.length) return;
+  $("#play").innerHTML = "&#10073;&#10073;";
+  timer = setInterval(function(){
+    if (i + 1 >= F.length){ stop(); return; }
+    show(i + 1);
+  }, 140 / speeds[si]);
+}
+$("#play").onclick = play;
+slider.oninput = function(e){ stop(); show(+e.target.value); };
+$("#spd").onclick = function(){
+  si = (si + 1) % speeds.length;
+  $("#spd").innerHTML = speeds[si] + "&times;";
+  if (timer){ stop(); play(); }
+};
+document.addEventListener("keydown", function(e){
+  if (e.key === " "){ e.preventDefault(); play(); }
+  if (e.key === "ArrowRight"){ stop(); show(i + 1); }
+  if (e.key === "ArrowLeft"){ stop(); show(i - 1); }
+});
+show(D.start || 0);
+
+/* ---------- map ---------- */
+(function(){
+  var pts = D.track || [], cl = D.clusters || [];
+  if (!pts.length && !cl.length){ $("#map").parentNode.parentNode.style.display = "none"; return; }
+  var all = pts.concat(cl.map(function(c){ return [c[1], c[2]]; }));
+  var xs = all.map(function(p){ return p[0]; }), ys = all.map(function(p){ return p[1]; });
+  var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
+  var y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+  var pad = 26, W = 600, H = 420;
+  var sc = Math.min((W - 2*pad) / Math.max(x1 - x0, 1e-6),
+                    (H - 2*pad) / Math.max(y1 - y0, 1e-6));
+  var ox = (W - (x1 - x0) * sc) / 2, oy = (H - (y1 - y0) * sc) / 2;
+  function px(p){ return [ox + (p[0] - x0) * sc, H - (oy + (p[1] - y0) * sc)]; }
+  var d = pts.map(function(p, n){ var q = px(p);
+    return (n ? "L" : "M") + q[0].toFixed(1) + " " + q[1].toFixed(1); }).join("");
+  var svg = '<path d="' + d + '" fill="none" stroke="var(--bark-3)" stroke-width="1.6"'
+          + ' stroke-linejoin="round" stroke-linecap="round" opacity=".65"/>';
+  cl.forEach(function(c){
+    var q = px([c[1], c[2]]);
+    var r = Math.min(9, 3 + Math.sqrt(c[3]) * 0.5);
+    svg += '<circle cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="'
+         + r.toFixed(1) + '" fill="var(--' + c[0] + ')" opacity=".8">'
+         + '<title>' + c[0] + " · " + c[3] + ' detections</title></circle>';
+  });
+  if (pts.length){
+    var s = px(pts[0]);
+    svg += '<circle cx="' + s[0].toFixed(1) + '" cy="' + s[1].toFixed(1)
+         + '" r="5" fill="none" stroke="var(--bark)" stroke-width="2"/>';
+  }
+  $("#map").innerHTML = svg;
+  var lg = CLASSES.filter(function(c){ return D.counts[c]; }).map(function(c){
+    return '<span><span class="swatch" style="background:var(--' + c + ')"></span>'
+         + c + ' (' + D.counts[c] + ')</span>'; }).join("");
+  $("#legend").innerHTML = lg
+    + '<span><span class="swatch" style="background:transparent;border:2px solid var(--bark)"></span>start</span>';
+})();
+
+/* ---------- reports ---------- */
+var tab = "llm";
+function esc(x){ return String(x).replace(/[&<>"]/g, function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function fmt(s){ var m = Math.floor(s/60), r = Math.round(s%60);
+  return m ? m + "m " + r + "s" : r + "s"; }
+function paint(){
+  ["llm","num","nar"].forEach(function(k){
+    $("#t-" + k).setAttribute("aria-selected", tab === k); });
+  var isNar = tab === "nar";
+  $("#rep").style.display = isNar ? "none" : "";
+  $("#nar").style.display = isNar ? "" : "none";
+  if (isNar){
+    var n = D.narration || [];
+    $("#nar").innerHTML = n.length
+      ? n.map(function(x){ return '<div class="nline"><b>' + fmt(x.t) + "</b><span>"
+          + esc(x.text) + "</span></div>"; }).join("")
+      : '<div class="note" style="padding:20px 0">Nothing was narrated during this lap.</div>';
+  } else {
+    var t = tab === "llm" ? D.llm_text : D.survey_text;
+    $("#rep").textContent = t || "(not available for this run)";
+  }
+}
+["llm","num","nar"].forEach(function(k){
+  $("#t-" + k).onclick = function(){ tab = k; paint(); }; });
+paint();
+
+$("#foot").innerHTML =
+  "Self-contained report for run " + esc(D.run) + ". Everything is embedded in this "
+  + "one file — no internet needed.<br>Counts are distinct spatial clusters of the "
+  + "car's position when a detection fired, merged within 3 m, not surveyed positions "
+  + "of the objects. No depth was used, so two objects passed close together may merge: "
+  + "treat the counts as a lower bound.<br>Space plays and pauses; arrow keys step "
+  + "frame by frame.";
+</script>
+</body>
+</html>

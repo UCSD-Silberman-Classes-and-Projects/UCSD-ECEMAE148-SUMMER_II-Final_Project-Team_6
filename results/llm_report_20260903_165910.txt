@@ -1,0 +1,25 @@
+## 1. Survey Scope and Duration
+
+The autonomous rover surveyed its route while driving. Detection operated live on recorded frames for 390.9 s, with 356 frames analyzed at 0.91 frames/s. A total of 3,526 GPS samples were recorded.
+
+## 2. Findings
+
+After merging detections within 3.0 m, the survey identified:
+
+- 7 people
+- 26 shrubs
+- 25 trees
+
+Using the supplied population-average carbon factors, these counts correspond to 2,555 kg CO₂ emitted annually by people, 78 kg absorbed annually by shrubs, and 545 kg absorbed annually by trees. The resulting illustrative net value is −1,932 kg CO₂/year. This is not a direct carbon measurement or climate ledger; the factors are population averages, and human respiration is part of the short carbon cycle.
+
+## 3. Positioning Quality and Meaning
+
+The results do not report that the rover used RTK-fixed positioning, so centimetre-grade accuracy cannot be claimed. If the positioning was anything less than RTK fixed, the positions are correspondingly coarser. The GPS sample count indicates that position data were collected, but it does not establish their accuracy or uncertainty. Therefore, the reported object locations and separations should be interpreted cautiously.
+
+## 4. Limitations
+
+The counts were generated from clusters of the rover’s own position when detections occurred, not from surveyed positions of the objects themselves. No depth information was used. Consequently, two objects that passed within the 3.0 m merge radius could be combined into one cluster, so the distinct-object counts should be treated as a lower bound. Counts may also inherit errors from detection and positioning. The data do not support conclusions about vegetation health, species, or overall environmental quality.
+
+## 5. Overall Assessment
+
+The rover completed a live route survey and produced a useful category-level inventory of 7 people, 26 shrubs, and 25 trees. However, these are route-segment cluster counts rather than precise object surveys. The absence of reported centimetre-grade positioning, the lack of depth data, and the 3.0 m merging rule limit spatial accuracy and make the counts conservative. The carbon result is illustrative only and should not be treated as a measured environmental balance.
