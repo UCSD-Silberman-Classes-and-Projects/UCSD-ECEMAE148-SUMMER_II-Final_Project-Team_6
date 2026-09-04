@@ -14,6 +14,9 @@
 
 **Krishna Visanakarrala** — Department of Electrical and Computer Engineering
 
+Calli Hill, Department of Natural Resources Management and Environmental Sciences, CPSLO
+
+
 <hr>
 
 ## Abstract
@@ -154,6 +157,8 @@ contain, is in the [reproduction guide](docs/reproduction.md).
 
 **Person detection limitations** The OAK-D captured insufficient real-world person images due to low campus foot traffic; we supplemented with external datasets (mostly walking poses). More varied examples (e.g., sitting) would have improved robustness.
 
+**GPS Hardware Issues** Our hardware for the GPS was not working, which meant we had to spend a lot of time debugging. We had to borrow another group's hardware components to get our GPS laps to work. 
+
 **Performance Limitations on the Pi** Running the full stack on the Raspberry Pi caused GPS drift and path deviation due to processing delays. We offloaded detection tasks to the Hailo-8 AI HAT+ to distribute compute load and maintain real-time performance.
 
 <hr>
@@ -189,6 +194,8 @@ works with the internet off.
 
 Thank you to Professor Jack Silberman and TAs Jose Castillo-Valdovinos and
 Daniel Galicia Ortiz for the course.
+
+Additionally, thank you to Calli Hill for helping us with this project and providing many great ideas! 
 
 
 <hr>
