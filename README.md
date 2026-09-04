@@ -8,12 +8,11 @@
 
 ## Team Members
 
-<!-- TODO: fill in your teammates' names, majors and contact details before submitting -->
-Farbod Haeri — M.S. Mechanical Engineering
+**Chuck Davies** — Department of Electrical and Computer Engineering
 
-*Teammate 2 —*
+**Farbod Haeri** — Department of Mechanical and Aerospace Engineering
 
-*Teammate 3 —*
+**Krishna Visanakarrala** — Department of Electrical and Computer Engineering
 
 <hr>
 
@@ -234,4 +233,8 @@ README format referenced from
 
 ## Contacts
 
-* Farbod Haeri — farbodh97@gmail.com | [GitHub](https://github.com/Farbod97)
+* Chuck Davies — Electrical and Computer Engineering
+
+* Farbod Haeri — Mechanical and Aerospace Engineering | farbodh97@gmail.com | [GitHub](https://github.com/Farbod97)
+
+* Krishna Visanakarrala — Electrical and Computer Engineering
