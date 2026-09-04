@@ -109,8 +109,11 @@ become one. Every report says so, and the counts are a **lower bound**.
 
 | Directory | What's in it |
 |---|---|
-| [`survey/`](survey) | everything that runs on the car — orchestration, detection, GPS, dashboard |
-| [`model/`](model) | the compiled `grove_lb.hef`, its class list, and the Hailo compile script |
+| [`survey/`](survey) | everything that runs on the car — orchestration, detection, GPS, camera, dashboard |
+| [`training/`](training) | how the model was made: the RF-DETR teacher, the dataset exporter, the Colab notebook, and the Hailo compile script |
+| [`ros2/`](ros2) | the ROS 2 lane-following track: 11 calibration and debugging tools, plus our tuned node configs |
+| [`vehicle/`](vehicle) | DonkeyCar configuration and `donkey_path.csv`, the recorded 482-waypoint route |
+| [`model/`](model) | the compiled `grove_lb.hef` and its class list |
 | [`offline_report/`](offline_report) | builds the single-file shareable HTML, plus the accuracy tooling |
 | [`results/`](results) | the final lap's reports and its offline HTML report |
 | [`docs/`](docs) | reproduction guide and hardware notes |
@@ -127,7 +130,13 @@ become one. Every report says so, and the counts are a **lower bound**.
 | `survey/lap_watch.py` | decides when a lap has actually closed, and stops the car |
 | `survey/set_drive_mode.py` | puts the car into full autonomy from software |
 | `offline_report/make_offline.py` | builds the self-contained HTML report |
-| `model/compile_hef.py` | ONNX → Hailo `.hef`, the step that took the longest to get right |
+| `training/compile_hef.py` | ONNX → Hailo `.hef`, the step that took the longest to get right |
+| `training/export_dataset.py` | turns the teacher's detections into a YOLO training set — the distillation step |
+| `training/test_rfdetr_oakd.py` | the RF-DETR teacher running on the camera, which produced our labels |
+| `training/Grove_HAT_model.ipynb` | the Colab notebook: train the student, export ONNX, compile for the accelerator |
+| `ros2/scripts/newlane.py` | lane detection we wrote while tuning the follower |
+| `ros2/config/…ros_racer_calibration.yaml` | the HSV bands and centreline we tuned on the real track |
+| `vehicle/donkey_path.csv` | the recorded route the car drives autonomously |
 
 <hr>
 
