@@ -1,0 +1,13 @@
+# GitHub's language bar counts BYTES, so one generated file was reporting this
+# project as 98% HTML / 2% Python.
+#
+# Grove_lap_20260903.html is 14 MB of base64-encoded JPEG frames emitted by
+# offline_report/make_offline.py. It is build output, not authored HTML, so it
+# is marked generated: GitHub still serves and diffs it, it just stops counting
+# it as a language.
+results/Grove_lap_20260903.html linguist-generated=true
+
+# The compiled model is a binary artifact of training, not source.
+model/grove_lb.hef binary linguist-generated=true
+
+# offline_template.html IS hand-written and stays counted.
