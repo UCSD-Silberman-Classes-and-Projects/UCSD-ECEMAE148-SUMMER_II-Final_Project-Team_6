@@ -7,6 +7,9 @@ data/
 logs/
 *.csv
 !results/*.csv
+# The recorded route is source, not data: without it the car has nothing
+# to follow. It was silently dropped by the *.csv rule above.
+!vehicle/donkey_path.csv
 
 # Python
 __pycache__/
