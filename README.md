@@ -1,4 +1,4 @@
-# <div align="center">Grove: An Autonomous GPS Tree Survey Rover</div>
+# <div align="center">Grove: An Autonomous Environmental Survey Robot with LLM-based Reporting</div>
 ### <div align="center">MAE 148 / ECE 148 Final Project</div>
 #### <div align="center">Team 6 — Summer Session II 2026</div>
 
@@ -18,36 +18,25 @@
 
 ## Abstract
 
-Grove is an autonomous rover that surveys vegetation. It drives a saved GPS path
-on its own, detects trees, shrubs and people from a camera while it drives, ties
-every detection to a centimetre-accurate RTK GPS position, and writes both a
-numeric report and an LLM-written summary the moment the lap closes.
+Grove is an autonomous car that surveys its environment. It drives a saved GPS path on its own, detects trees, shrubs and people from an OAK-D camera while driving, ties every detection to a centimetre-accurate RTK GPS position, and produces both a numeric report and an LLM-written summary the moment the lap ends.
 
-The detection runs **on the car**, on a Hailo-8 AI HAT+, not on a laptop and not
-in the cloud. We trained our own three-class YOLOv8 model by knowledge
-distillation, compiled it to the Hailo's `.hef` format, and measured it on real
-hardware at **mAP50 0.735 and 41.8 fps** — roughly 40× the throughput of the
-same model on the Raspberry Pi's CPU.
-
-One button in a browser starts the whole thing: the car brings up RTK, arms the
-camera, starts detecting, puts itself into full autonomy, drives the loop, stops
-itself when it closes, and saves the video and the report.
+The detection runs **on the car**, on a Hailo-8 AI HAT+, not on a laptop and not in the cloud. We trained our own three-class YOLOv8 model by knowledge distillation, compiled it to the Hailo's `.hef` format, and measured it on real hardware at **mAP50 0.735 and 41.8 fps** — roughly 40× the throughput of the same model on the Raspberry Pi's CPU. 
 
 <hr>
 
 ## What We Promised
 
 ### Must Have
-* Drive a saved GPS path autonomously using RTK positioning
-* Detect vegetation from the camera while driving
-* Tie every detection to a GPS position and de-duplicate into distinct objects
-* Produce a report at the end of the run
+* Autonomous GPS-guided navigation along a predefined route
+* Environmental scanning using the OAK-D camera
+* Object detection, classification, and geolocation logging
+* Automated LLM-based report generation 
 
 ### Nice to Have
-* Run detection on the AI accelerator instead of the CPU
-* A live web dashboard showing what the car sees as it drives
-* An LLM writing the survey report, and narrating during the lap
-* Start the whole run from the browser with no game controller
+* Map generation of the surveyed area
+* Anomaly detection in environmental data
+* Autonomous exploration without a predefined route
+* Expanded environmental metrics (e.g., tree species, trunk diameter)
 
 <hr>
 
@@ -59,7 +48,7 @@ itself when it closes, and saves the video and the report.
 - **RTK-fixed positioning** throughout the lap (401 of 441 parsed GGA fixes were RTK-FIXED)
 - **Live dashboard** — camera feed with detection boxes, counts, and an LLM narrating every 30 s while the car drives
 - **Reports** — numeric, LLM-written, plus an annual carbon estimate
-- **Single-file offline report** ([`results/Grove_lap_20260903.html`](results/Grove_lap_20260903.html)) with the whole lap embedded: scrubbable annotated video, route map, and every report. No server, no internet
+- **Single-file offline report** ([`results/Grove_lap_20260903.html`](results/Grove_lap_20260903.html)) with the whole lap embedded: scrubbable annotated video, route map, and every report 
 
 ### Results from the final lap
 
@@ -163,33 +152,9 @@ contain, is in the [reproduction guide](docs/reproduction.md).
 
 ## Challenges
 
-**numpy 2 silently broke the AI HAT.** `pyhailort` is a C extension built
-against numpy 1.x. Under the numpy-2 environment our detector ran in, every
-inference failed with `Memory size of vstream ... does not match the frame count
-(got 0)` — the extension cannot read a numpy-2 array at all, and no array form
-works around it. Our self-test passed the whole time because it ran under a
-*different* interpreter. Fixed by selecting the interpreter based on whether the
-HAT is present.
+**Person detection limitations** The OAK-D captured insufficient real-world person images due to low campus foot traffic; we supplemented with external datasets (mostly walking poses). More varied examples (e.g., sitting) would have improved robustness.
 
-**Letterboxing was worth 28% accuracy.** Plain-resizing frames to 640×640
-distorts aspect ratio. Measured on the validation set: mAP50 **0.618** plain
-resize vs **0.795** letterboxed. We recompiled the model with letterboxed
-calibration and matched the car's preprocessing to it.
-
-**YOLOv8's detection head will not compile for the Hailo.** `/model.22/dfl/Reshape`,
-`/Sub` and `/Add_1` are all unsupported. The fix is to cut the graph before the
-head at the six detection convolutions and let the chip's own NMS decode the
-boxes.
-
-**Two RTK runners fought over one serial port.** The watchdog restarted a wedged
-correction runner without confirming the old one had died, so both held the
-control port, every reset timed out, and the fix never left 2–5 m accuracy for a
-whole session. Two runners is strictly worse than none — it cannot self-recover.
-
-**`POST /drive` does not set the drive mode.** It returns `200` and does nothing:
-only the websocket handler latches the mode, and the joystick overwrites an
-unlatched one within ~50 ms. That is why the car sat still the first time we
-tried to start it from software.
+**Performance Limitations on the Pi** Running the full stack on the Raspberry Pi caused GPS drift and path deviation due to processing delays. We offloaded detection tasks to the Hailo-8 AI HAT+ to distribute compute load and maintain real-time performance.
 
 <hr>
 
@@ -205,12 +170,11 @@ works with the internet off.
   <img src="docs/media/media_frame2.jpg" width="380">
 </div>
 
-<!-- TODO: add links to the presentation slides and demo video once uploaded -->
 ### Final Presentation Slides
-*link to be added*
+[View slides on Google Slides](https://docs.google.com/presentation/d/1sO4k4Od_j3QZOskuEYOf58iFhr3uQPs6sYA8-_jKNcs/edit?usp=sharing)
 
 ### Demo Video
-*link to be added*
+[Watch on YouTube](https://youtu.be/8qFMYO2c-sA)
 
 <hr>
 
@@ -226,8 +190,6 @@ works with the internet off.
 Thank you to Professor Jack Silberman and TAs Jose Castillo-Valdovinos and
 Daniel Galicia Ortiz for the course.
 
-README format referenced from
-[UCSD-ECE180-SUMMER_I-Final_Project-Team_5](https://github.com/UCSD-Silberman-Classes-and-Projects/UCSD-ECE180-SUMMER_I-Final_Project-Team_5).
 
 <hr>
 
@@ -237,4 +199,4 @@ README format referenced from
 
 * Farbod Haeri — Mechanical and Aerospace Engineering | farbodh97@gmail.com | [GitHub](https://github.com/Farbod97)
 
-* Krishna Visanakarrala — Electrical and Computer Engineering
+* Krishna Visanakarrala — Electrical and Computer Engineering 
